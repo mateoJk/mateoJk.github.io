@@ -20,7 +20,7 @@ html {
     background: #475569;
 }
 
-/* 2. Global "Grainy" Texture Overlay (Subtle Noise) 
+/* Global "Grainy" Texture Overlay (Subtle Noise) 
    Adds a premium, tangible feel to the UI.
 */
 .noise-overlay {
@@ -35,8 +35,7 @@ html {
     opacity: 0.05;
 }
 
-/* 3. Spotlight Card Effect 
-   Requires JS to update --mouse-x and --mouse-y.
+/* Spotlight Card Effect 
    Creates a localized glow that follows the cursor.
 */
 .spotlight-card {
@@ -113,7 +112,7 @@ html {
 
 /* 4. Scroll Reveal Animations */
 
-/* Por defecto: Estado seguro (Visible) */
+/* default (Visible) */
 .reveal-hidden {
     opacity: 1;
     transform: translateY(0);
@@ -122,25 +121,22 @@ html {
     will-change: opacity, transform; /* Optimización de GPU */
 }
 
-/* 2. Solo si JS está activo: Ocultamos para poder animar */
 .js-enabled .reveal-hidden {
     opacity: 0;
     transform: translateY(30px);
 }
 
-/* 3. Cuando el Observer entra en acción: Volvemos a mostrar */
 .js-enabled .reveal-visible {
     opacity: 1;
     transform: translateY(0);
 }
-
-/* Delays (Se mantienen igual, pero los agrupamos aquí) */
+/* delays */
 .reveal-delay-100 { transition-delay: 100ms; }
 .reveal-delay-200 { transition-delay: 200ms; }
 .reveal-delay-300 { transition-delay: 300ms; }
 
 
-/* 5. Typewriter Cursor */
+/* Typewriter Cursor */
 .typewriter-cursor {
     display: inline-block;
     width: 3px;
@@ -149,6 +145,23 @@ html {
     margin-left: 2px;
     animation: blink 1s step-end infinite;
     vertical-align: middle;
+}
+
+/* Contenedor de la imagen del cliente */
+.featured-client-container {
+    min-height: 380px;
+    overflow: hidden;
+}
+
+#featured-client-img {
+    transform: scale(1.27);
+    transform-origin: center center;
+}
+
+/* zoom img */
+.group:hover #featured-client-img {
+    transform: scale(1.32); 
+    transition: transform 0.7s ease-in-out, filter 0.7s ease-in-out;
 }
 
 @keyframes blink {
