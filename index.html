@@ -111,6 +111,10 @@
                             Proyectos
                             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
                         </a>
+                        <a href="#experience" class="hover:text-primary dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">
+                            Experiencia Profesional
+                            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+                        </a>
                         <a href="#contact" class="bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 hover:border-primary/50 text-gray-900 dark:text-white px-6 py-2 rounded-full text-sm font-semibold transition-all">
                             Contáctame
                         </a>
@@ -140,11 +144,13 @@
             </div>
         </div>
     </nav>
-    <div class="hidden md:hidden fixed w-full z-40" id="mobile-menu">
+    <!-- Menu hamburguesa -->
+    <div class="md:hidden fixed w-full z-40 transition-all duration-300 ease-in-out opacity-0 pointer-events-none -translate-y-2" id="mobile-menu">
         <div class="px-2 pt-20 pb-3 space-y-1 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-white/5 shadow-xl">
-            <a href="#home" class="block px-3 py-2 text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-white/5 rounded-md">Inicio</a>
-            <a href="#projects" class="block px-3 py-2 text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-white/5 rounded-md">Proyectos</a>
-            <a href="#contact" class="block px-3 py-2 text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-white/5 rounded-md">Contacto</a>
+            <a href="#home" class="block px-3 py-2 ...">Inicio</a>
+            <a href="#projects" class="block px-3 py-2 ...">Proyectos</a>
+            <a href="#experience" class="block px-3 py-2 ...">Experiencia Profesional</a>
+            <a href="#contact" class="block px-3 py-2 ...">Contacto</a>
         </div>
     </div>
 
@@ -206,12 +212,8 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 reveal-hidden">
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Mis Proyectos</h2>
-                    <p class="text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">Una selección de trabajos recientes que
-                        destacan por su
-                        diseño y funcionalidad.</p>
+                    <p class="text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">Una selección de trabajos recientes que destacan por su diseño y funcionalidad.</p>
                 </div>
-
-                <!-- Optimized Semantic HTML: UL > LI > ARTICLE -->
                 <ul id="cards" role="list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Project Card 1 -->
                     <li class="group reveal-hidden reveal-delay-100 h-full">

@@ -48,23 +48,34 @@ class PortfolioApp {
         });
     }
 
-    setupMobileMenu() {
-        if (!this.dom.mobileMenuBtn || !this.dom.mobileMenu) return;
+setupMobileMenu() {
+    if (!this.dom.mobileMenuBtn || !this.dom.mobileMenu) return;
 
-        this.dom.mobileMenuBtn.addEventListener('click', () => {
-            const isExpanded = this.dom.mobileMenuBtn.getAttribute('aria-expanded') === 'true';
-            this.dom.mobileMenuBtn.setAttribute('aria-expanded', !isExpanded);
-            this.dom.mobileMenu.classList.toggle('hidden');
-        });
+    this.dom.mobileMenuBtn.addEventListener('click', () => {
+        const isOpen = this.dom.mobileMenu.classList.contains('opacity-100');
+        
+        if (isOpen) {
+            // Cerrar
+            this.dom.mobileMenu.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            this.dom.mobileMenu.classList.add('opacity-0', '-translate-y-2', 'pointer-events-none');
+            this.dom.mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        } else {
+            // Abrir
+            this.dom.mobileMenu.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            this.dom.mobileMenu.classList.remove('opacity-0', '-translate-y-2', 'pointer-events-none');
+            this.dom.mobileMenuBtn.setAttribute('aria-expanded', 'true');
+        }
+    });
 
-        // Cerrar menú al hacer click en un link (UX)
-        this.dom.mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                this.dom.mobileMenu.classList.add('hidden');
-                this.dom.mobileMenuBtn.setAttribute('aria-expanded', 'false');
-            });
+    // Ajustar los links para que también cierren con el nuevo efecto
+    this.dom.mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            this.dom.mobileMenu.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            this.dom.mobileMenu.classList.add('opacity-0', '-translate-y-2', 'pointer-events-none');
+            this.dom.mobileMenuBtn.setAttribute('aria-expanded', 'false');
         });
-    }
+    });
+}
 
     setupTypewriter() {
         if (!this.dom.typewriter) return;
