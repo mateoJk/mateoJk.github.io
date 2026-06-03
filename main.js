@@ -5,7 +5,7 @@
 
 const APP_CONFIG = {
     typewriter: {
-        phrases: ["Full Stack Developer", "Creative Thinker", "Problem Solver"],
+        phrases: ["Software Engineer", "Data & IA Automation", "LLM & Agents", "Problem solver"],
         speeds: { type: 100, delete: 50, pause: 3000 }
     },
     revealOptions: {
@@ -39,6 +39,8 @@ class PortfolioApp {
         this.setupTypewriter();
         this.setupSpotlight();
         this.setupScrollEffects();
+        this.setupActiveNav();
+        this.setupModalCarousel();
         this.setupContactForm(); // Integrated logic
     }
 
@@ -114,20 +116,18 @@ class PortfolioApp {
 
     setupSpotlight() {
         this.dom.cards.forEach(card => {
-            let rect = null;
-            
-            card.addEventListener('mouseenter', () => rect = card.getBoundingClientRect());
-
             card.addEventListener('mousemove', (e) => {
-                if (!rect) return;
-                
+                // Read layout once per event (outside rAF) so the value is
+                // always current — avoids stale rects from reveal animations.
+                const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
 
+                // rAF only writes — no DOM reads inside the callback.
                 requestAnimationFrame(() => {
                     card.style.setProperty("--mouse-x", `${x}px`);
                     card.style.setProperty("--mouse-y", `${y}px`);
-                    
+
                     const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 5;
                     const rotateX = -((y - rect.height / 2) / (rect.height / 2)) * 5;
                     card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
@@ -136,7 +136,6 @@ class PortfolioApp {
 
             card.addEventListener('mouseleave', () => {
                 card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
-                rect = null;
             });
         });
     }
@@ -160,8 +159,29 @@ class PortfolioApp {
                 isScrolled = shouldScroll;
                 this.dom.nav?.classList.toggle('py-2', isScrolled);
                 this.dom.nav?.classList.toggle('shadow-md', isScrolled);
+                this.dom.nav?.classList.toggle('scrolled', isScrolled);
             }
         }, { passive: true });
+    }
+
+    setupActiveNav() {
+        const sections = document.querySelectorAll('main section[id]');
+        const navLinks = document.querySelectorAll('nav a[href^="#"], #mobile-menu a[href^="#"]');
+        if (!sections.length || !navLinks.length) return;
+
+        const activate = (id) => {
+            navLinks.forEach(link => {
+                link.classList.toggle('nav-active', link.getAttribute('href') === `#${id}`);
+            });
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) activate(entry.target.id);
+            });
+        }, { threshold: 0, rootMargin: '-80px 0px -60% 0px' });
+
+        sections.forEach(section => observer.observe(section));
     }
 
     setupContactForm() {
@@ -205,6 +225,136 @@ class PortfolioApp {
                 }, 4000);
             }
         });
+    }
+
+    setupModalCarousel() {
+        const modal   = document.getElementById('erp-preview-modal');
+        const trigger = document.querySelector('[data-modal-trigger="erp-preview"]');
+        if (!modal || !trigger) return;
+
+        const slides = [
+            { webp: 'img/flowcommerce_reportes_ventas.webp',      png: 'img/flowcommerce_reportes_ventas.png',      alt: 'Reportes de ventas' },
+            { webp: 'img/flowcommerce_metaads.webp',              png: 'img/flowcommerce_metaads.png',              alt: 'Meta Ads — dashboard' },
+            { webp: 'img/flowcommerce_metaads_campaña.webp',      png: 'img/flowcommerce_metaads_campaña.png',      alt: 'Meta Ads — campaña' },
+            { webp: 'img/flowcommerce_metaads_campaña_list.webp', png: 'img/flowcommerce_metaads_campaña_list.png', alt: 'Meta Ads — lista de campañas' },
+            { webp: 'img/flowcommerce_asistente.webp',            png: 'img/flowcommerce_asistente.png',            alt: 'Asistente IA conversacional' },
+        ];
+
+        const track    = modal.querySelector('[data-carousel-track]');
+        const dotsWrap = modal.querySelector('[data-carousel-dots]');
+        const counter  = modal.querySelector('[data-carousel-counter]');
+        const prevBtn  = modal.querySelector('[data-carousel-prev]');
+        const nextBtn  = modal.querySelector('[data-carousel-next]');
+        const closeBtn = modal.querySelector('[data-modal-close]');
+        const backdrop = modal.querySelector('[data-modal-backdrop]');
+        const panel    = modal.querySelector('.relative.z-10');
+
+        let current   = 0;
+        let autoTimer = null;
+
+        // Inject <picture> slides into the track
+        slides.forEach((s, i) => {
+            const div = document.createElement('div');
+            div.className = 'carousel-slide';
+            div.innerHTML = `<picture>
+                <source srcset="${s.webp}" type="image/webp">
+                <img src="${s.png}" alt="${s.alt}" loading="${i === 0 ? 'eager' : 'lazy'}">
+            </picture>`;
+            track.appendChild(div);
+        });
+
+        // Inject dots
+        slides.forEach((_, i) => {
+            const btn = document.createElement('button');
+            btn.className = `carousel-dot${i === 0 ? ' active' : ''}`;
+            btn.setAttribute('aria-label', `Slide ${i + 1}`);
+            btn.addEventListener('click', () => { goTo(i); startAuto(); });
+            dotsWrap.appendChild(btn);
+        });
+
+        const updateUI = () => {
+            track.style.transform = `translateX(-${current * 100}%)`;
+            dotsWrap.querySelectorAll('.carousel-dot').forEach((d, i) =>
+                d.classList.toggle('active', i === current)
+            );
+            if (counter) counter.textContent = `${current + 1} / ${slides.length}`;
+        };
+
+        const goTo = (n) => {
+            current = ((n % slides.length) + slides.length) % slides.length;
+            updateUI();
+        };
+
+        const startAuto = () => {
+            clearInterval(autoTimer);
+            autoTimer = setInterval(() => goTo(current + 1), 5000);
+        };
+
+        const stopAuto = () => clearInterval(autoTimer);
+
+        const openModal = () => {
+            goTo(0);
+            modal.classList.remove('pointer-events-none');
+            // Double rAF ensures the opacity transition fires after display change
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+                modal.classList.add('opacity-100');
+            }));
+            document.body.style.overflow = 'hidden';
+            startAuto();
+            setTimeout(() => closeBtn?.focus(), 320);
+        };
+
+        const closeModal = () => {
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            stopAuto();
+            modal.addEventListener('transitionend', () => {
+                modal.classList.add('pointer-events-none');
+                document.body.style.overflow = '';
+                trigger.focus();
+            }, { once: true });
+        };
+
+        trigger.addEventListener('click', (e) => { e.stopPropagation(); openModal(); });
+
+        // Make the entire ERP card clickable
+        const card = trigger.closest('article');
+        if (card) {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', openModal);
+        }
+
+        closeBtn?.addEventListener('click', closeModal);
+        backdrop?.addEventListener('click', closeModal);
+        prevBtn?.addEventListener('click', () => { goTo(current - 1); startAuto(); });
+        nextBtn?.addEventListener('click', () => { goTo(current + 1); startAuto(); });
+
+        // Pause auto-advance while hovering the panel
+        panel?.addEventListener('mouseenter', stopAuto);
+        panel?.addEventListener('mouseleave', () => {
+            if (modal.classList.contains('opacity-100')) startAuto();
+        });
+
+        // Global keyboard handling: arrows, Escape, focus trap
+        document.addEventListener('keydown', (e) => {
+            if (!modal.classList.contains('opacity-100')) return;
+            if (e.key === 'Escape') { closeModal(); return; }
+            if (e.key === 'ArrowLeft')  { goTo(current - 1); startAuto(); }
+            if (e.key === 'ArrowRight') { goTo(current + 1); startAuto(); }
+            if (e.key === 'Tab') {
+                const focusable = [...modal.querySelectorAll('button')];
+                const first = focusable[0];
+                const last  = focusable[focusable.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault(); last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault(); first.focus();
+                }
+            }
+        });
+
+        updateUI();
     }
 }
 

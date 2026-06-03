@@ -1,23 +1,24 @@
+:root {
+    --primary-rgb: 59, 130, 246;
+}
+
 /* 1. Custom Smooth Scroll & Scrollbar */
 html {
     scroll-behavior: smooth;
 }
 
-::-webkit-scrollbar {
-    width: 8px;
+@media (prefers-color-scheme: light) {
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 }
 
-::-webkit-scrollbar-track {
-    background: #0f172a;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+@media (prefers-color-scheme: dark) {
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
 }
 
 /* Global "Grainy" Texture Overlay (Subtle Noise) 
@@ -115,20 +116,20 @@ html {
 /* default (Visible) */
 .reveal-hidden {
     opacity: 1;
-    transform: translateY(0);
-    transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), 
-                transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: opacity, transform; /* Optimización de GPU */
+    translate: 0 0;
+    transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+                translate 1s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, translate;
 }
 
 .js-enabled .reveal-hidden {
     opacity: 0;
-    transform: translateY(30px);
+    translate: 0 30px;
 }
 
 .js-enabled .reveal-visible {
     opacity: 1;
-    transform: translateY(0);
+    translate: 0 0;
 }
 /* delays */
 .reveal-delay-100 { transition-delay: 100ms; }
@@ -174,4 +175,86 @@ html {
     50% {
         opacity: 0;
     }
+}
+
+/* Nav border — transparent at top, grounded on scroll */
+#navbar {
+    border-bottom-color: transparent;
+}
+#navbar.scrolled {
+    border-bottom-color: rgba(30, 41, 59, 0.5);
+}
+html:not(.dark) #navbar.scrolled {
+    border-bottom-color: rgba(226, 232, 240, 0.8);
+}
+
+/* Active nav link — underline + primary color */
+nav a.nav-active:has(> span.absolute) {
+    color: rgb(var(--primary-rgb));
+}
+nav a.nav-active > span.absolute {
+    width: 100%;
+}
+
+/* Section gradient fade — subtle blend between sections */
+main section {
+    position: relative;
+}
+main section:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    pointer-events: none;
+    z-index: 1;
+    background: linear-gradient(to bottom, transparent, rgb(2 6 23 / 0.2));
+}
+html:not(.dark) main section:not(:last-child)::after {
+    background: linear-gradient(to bottom, transparent, rgb(241 245 249 / 0.5));
+}
+
+/* Carousel dots */
+.carousel-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.4);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    flex-shrink: 0;
+}
+.carousel-dot.active {
+    background: white;
+    width: 0.75rem;
+}
+
+/* Carousel slides */
+.carousel-slide {
+    flex-shrink: 0;
+    width: 100%;
+    height: 340px;
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+@media (min-width: 768px) {
+    .carousel-slide { height: 560px; }
+}
+.carousel-slide picture,
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* Modal panel max-height so it never overflows small screens */
+#erp-preview-modal .relative.z-10 {
+    max-height: 95vh;
+    overflow-y: auto;
 }
